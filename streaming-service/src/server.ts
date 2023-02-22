@@ -1,4 +1,5 @@
 import { error } from 'console';
+import { writeFile } from 'fs';
 import net from 'net';
 import { WebSocket, WebSocketServer } from 'ws';
 
@@ -7,21 +8,27 @@ const TCP_PORT = parseInt(process.env.TCP_PORT || '12000', 10);
 const tcpServer = net.createServer();
 const websocketServer = new WebSocketServer({ port: 8080 });
 
+let outlier_arr = new Array()
 
+function create_log(){
+    writeFile("incidents.log",'',(err) => {
+        if (err) throw err;
+       })
+}
+
+
+function clear_outlier_arr(){
+    outlier_arr = [];
+}
 
 tcpServer.on('connection', (socket) => {
     console.log('TCP client connected');
     
+    create_log();
+    setInterval(clear_outlier_arr,5000);
+
     socket.on('data', (msg) => {
-
-
-
         let msg_string = msg.toString();
-
-        // HINT: what happens if the JSON in the received message is formatted incorrectly?
-        // HINT: see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
-
-
 
         try{
             JSON.parse(msg_string)
@@ -29,10 +36,25 @@ tcpServer.on('connection', (socket) => {
             console.error(error);
             msg_string = msg_string.slice(0,-1)
         }
-        console.log("\n");
-        console.log(msg.toString());
-        console.log(msg_string);
+
         let currJSON = JSON.parse(msg_string);
+        let battery_temp = parseFloat(currJSON.battery_temperature);
+
+        console.log("\n");
+
+        if (battery_temp > 80 || battery_temp < 20){
+            outlier_arr.push(currJSON);
+            console.log("OUTLIER");
+            if (outlier_arr.length == 3){
+                console.log("RECORD");
+                writeFile()
+                // record timestamp in log
+            }
+        }
+
+        console.log(msg_string);
+        console.log(battery_temp);
+
         websocketServer.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
           client.send(msg_string);
