@@ -1,6 +1,7 @@
 import { error } from 'console';
 import { writeFile } from 'fs';
 import net from 'net';
+import { parseArgs } from 'util';
 import { WebSocket, WebSocketServer } from 'ws';
 
 const TCP_PORT = parseInt(process.env.TCP_PORT || '12000', 10);
@@ -10,12 +11,6 @@ const websocketServer = new WebSocketServer({ port: 8080 });
 
 let outlier_arr = new Array()
 
-function create_log(){
-    writeFile("incidents.log",'',(err) => {
-        if (err) throw err;
-       })
-}
-
 
 function clear_outlier_arr(){
     outlier_arr = [];
@@ -24,7 +19,6 @@ function clear_outlier_arr(){
 tcpServer.on('connection', (socket) => {
     console.log('TCP client connected');
     
-    create_log();
     setInterval(clear_outlier_arr,5000);
 
     socket.on('data', (msg) => {
@@ -39,16 +33,23 @@ tcpServer.on('connection', (socket) => {
 
         let currJSON = JSON.parse(msg_string);
         let battery_temp = parseFloat(currJSON.battery_temperature);
-
+        let timestamp = currJSON.timestamp
         console.log("\n");
 
         if (battery_temp > 80 || battery_temp < 20){
             outlier_arr.push(currJSON);
             console.log("OUTLIER");
             if (outlier_arr.length == 3){
+
                 console.log("RECORD");
-                writeFile()
+
+                writeFile("incidents.log",timestamp.toString(),(err) => {
+                    if (err) throw err;
+                   })
+
+                outlier_arr = [];
                 // record timestamp in log
+                // alternative method can read number of inputs - as inputs sent every 500ms
             }
         }
 
