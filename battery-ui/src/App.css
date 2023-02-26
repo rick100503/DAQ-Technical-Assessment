@@ -3,14 +3,23 @@
 }
 
 .App-header {
-  background-color: #000000;
-  min-height: 10vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  padding: 0 8%;
   font-size: calc(10px + 2vmin);
   color: white;
+  position: relative;
+  background-image: url("bg.jpg");
+  background-repeat: no-repeat;
+  background-size:cover;
+  image-rendering: pixelated;
+}
+
+nav{
+  display: flex;
+  align-items: center;
+  height: calc(100px + 1vmin);
+  background-color: black;
 }
 
 .live-value {
@@ -20,13 +29,20 @@
 }
 
 .redback-logo {
-  max-width: calc(200px + 1vmin);
-  display: flex;
-  align-self: center;
-  padding-top: 5%;
+  max-width: calc(100px + 1vmin);
+  position: absolute;
+  top: 5;
+  left: calc((100% - 195px) / 2);
 }
 
 .value-title {
   font-size: calc(25px + 2vmin);
+}
+
+.main-container{
+  width: 75%;
+  height: 100% - calc(100px + 1vmin);
+  top: calc(100px + 1vmin);
+  align-items: center;
 }
 

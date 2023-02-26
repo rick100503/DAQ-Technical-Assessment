@@ -1,5 +1,5 @@
 import { error } from 'console';
-import { writeFile } from 'fs';
+import { writeFile,appendFile } from 'fs';
 import net from 'net';
 import { parseArgs } from 'util';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -9,17 +9,23 @@ const TCP_PORT = parseInt(process.env.TCP_PORT || '12000', 10);
 const tcpServer = net.createServer();
 const websocketServer = new WebSocketServer({ port: 8080 });
 
-let outlier_arr = new Array()
+let recent_timestamp = new Array()
+let recent_outlier = 0;
 
 
-function clear_outlier_arr(){
-    outlier_arr = [];
-}
+writeFile("incidents.log",'',(err) => {
+    if (err) throw err;
+   })
+
+var fs = require('fs')
+var logger = fs.createWriteStream('incidents.log', {
+        flags: 'a' // 'a' means appending (old data will be preserved)
+            })
 
 tcpServer.on('connection', (socket) => {
     console.log('TCP client connected');
     
-    setInterval(clear_outlier_arr,5000);
+
 
     socket.on('data', (msg) => {
         let msg_string = msg.toString();
@@ -33,23 +39,26 @@ tcpServer.on('connection', (socket) => {
 
         let currJSON = JSON.parse(msg_string);
         let battery_temp = parseFloat(currJSON.battery_temperature);
-        let timestamp = currJSON.timestamp
+        let timestamp = currJSON.timestamp.toString();
         console.log("\n");
+        
+        if (recent_timestamp.length > 10){
+            recent_timestamp = [];
+        }
+
+        recent_timestamp.push(currJSON);
+
 
         if (battery_temp > 80 || battery_temp < 20){
-            outlier_arr.push(currJSON);
             console.log("OUTLIER");
-            if (outlier_arr.length == 3){
+            recent_outlier += 1
+            if (recent_outlier == 3){
 
                 console.log("RECORD");
-
-                writeFile("incidents.log",timestamp.toString(),(err) => {
-                    if (err) throw err;
-                   })
-
-                outlier_arr = [];
+                var os = require("os");
+                logger.write(timestamp + os.EOL);
+                recent_outlier = 0;
                 // record timestamp in log
-                // alternative method can read number of inputs - as inputs sent every 500ms
             }
         }
 
