@@ -30,6 +30,22 @@ function App() {
       let message_obj = JSON.parse(event.data);
       setTemperature(message_obj["battery_temperature"].toPrecision(3));
 
+      var fs = require('fs');
+      fs.readFile('file.txt', function(err:any, data:any) {
+      if(err) throw err;
+      var array = data.toString().split("\n");
+      let list = document.getElementById("myList");
+     
+      data.forEach((item: any) => {
+      let li = document.createElement("li");
+      li.innerText = item;
+      list!.appendChild(li);
+    });
+      if (array.length > 10){
+
+      }
+});
+
         if (message_obj["battery_temperature"].toPrecision(3) > 80 || message_obj["battery_temperature"].toPrecision(3) < 20){
             // document.body.style.backgroundColor =  "red";
             app_header!.style.backgroundColor = "red";
@@ -62,6 +78,11 @@ function App() {
             Live Battery Temperature
             </p>
             <LiveValue temp={temperature}/>
+          </div>
+          <div className='sub_container'>
+          <p className='value-title'>
+            Recent Incidents 
+            </p>
           </div>
         </div>
       </header>
