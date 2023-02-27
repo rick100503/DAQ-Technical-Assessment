@@ -6,7 +6,7 @@ const HOST = "localhost"
 const PORT = 12000
 
 const MILLISECONDS = 500;
-const ERROR_CHANCE = 70;
+const ERROR_CHANCE = 5;
 
 function generate_and_send_battery_data() {
     let generated_value: number = 0;
