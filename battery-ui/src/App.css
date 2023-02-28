@@ -59,7 +59,7 @@ nav{
   padding: 1px;
   position: relative;
   top: 10px;
-  background-color: blue;
+  background-image: linear-gradient(to bottom right, red, rgb(15, 8, 86));
 }
 
 .sub_container{
