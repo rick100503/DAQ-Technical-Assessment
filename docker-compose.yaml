@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  battery-ui:
+    build: ./battery-ui
+    container_name: battery-ui_c
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./battery_ui:/app
+      - ./app:/node_modules
+    stdin_open: true
+    tty: true
+  
+  streaming-service:
+    build: ./streaming-service
+    container_name: streaming-service_c
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./streaming-service:/app
+      - ./app:/node_modules
+    stdin_open: true
+    tty: true
+
+  data-emulator:
+    build: ./data-emulator
+    container_name: data-emulator_c
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./data-emulator:/app
+      - ./app:/node_modules
+    stdin_open: true
+    tty: true
+      
