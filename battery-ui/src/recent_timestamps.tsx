@@ -15,10 +15,10 @@ function Recent_outliers({ timestamps } : Outlierprops){
         return <li> </li>
     }
     else{
-        for (let i = 0; i < timestamps.length;i++ ){
+        for (let i = timestamps.length -1;i >= 0; i-- ){
             html_string += "<li>" + timestamps[i] + "</li>"
         }
-        return <ul dangerouslySetInnerHTML={{ __html: html_string }} />
+        return <ol dangerouslySetInnerHTML={{ __html: html_string }} />
     }
 }
 
